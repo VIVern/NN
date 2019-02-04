@@ -63,6 +63,13 @@ sendButton.onclick = function (event) {
     let xhr = new XMLHttpRequest();
 
     xhr.open('POST', '/send_image');
-    xhr.send("hi");
-    console.log(xhr.response);
+    xhr.setRequestHeader('Content-type', 'application/json');
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+    };
+
+    let jsonData = {image : imageVector};
+
+    xhr.send(JSON.stringify(jsonData));
 };

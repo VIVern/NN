@@ -1,5 +1,7 @@
-from flask import (Flask, render_template, request, Response)
+from flask import (Flask, render_template, request, Response, json)
 import network
+
+
 app = Flask(__name__)
 
 
@@ -10,5 +12,14 @@ def index():
 
 @app.route("/send_image", methods=["POST"])
 def image_vector():
-    return Response(response="1", status=201)
+    vectorized_image = request.get_json()
+    print(vectorized_image['image'])
+
+
+    response = app.response_class(
+        response=json.dumps({"id": 1}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 

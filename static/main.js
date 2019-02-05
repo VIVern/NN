@@ -1,11 +1,13 @@
 let singleW = singleH = 10;
 let w = h = 500 / singleW;
-let color = ['green', 'red', 'blue', 'yellow', 'purple', 'black'];
 let imageVector = [];
+let expectedVector = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 let field = document.querySelector('#field');
 let clearButton = document.querySelector('#clear');
 let sendButton = document.querySelector('#send');
+let sendTrainButton = document.querySelector('#sendTrain');
+let trainButton = document.querySelector('#train');
 
 function randomInteger(min, max) {
     var rand = min - 0.5 + Math.random() * (max - min + 1);
@@ -62,14 +64,48 @@ sendButton.onclick = function (event) {
     event.preventDefault();
     let xhr = new XMLHttpRequest();
 
-    xhr.open('POST', '/send_image');
+    xhr.open('POST', '/predict');
     xhr.setRequestHeader('Content-type', 'application/json');
 
     xhr.onload = function () {
         console.log(xhr.responseText);
     };
 
-    let jsonData = {image : imageVector};
+    let jsonData = {'image' : imageVector};
 
     xhr.send(JSON.stringify(jsonData));
+};
+
+sendTrainButton.onclick = function (event) {
+    event.preventDefault();
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('POST', '/send_train_data');
+    xhr.setRequestHeader('Content-type', 'application/json');
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+    };
+
+    let expectedValue = +document.getElementById('expectedValue').value;
+    expectedVector[expectedValue] = 1;
+    console.log(expectedVector);
+    let jsonData = {'image' : imageVector, 'expected-vector': expectedVector, 'expected-prediction': expectedValue};
+
+    xhr.send(JSON.stringify(jsonData));
+
+    expectedVector[expectedValue] = 1;
+};
+
+trainButton.onclick = function (event) {
+    event.preventDefault();
+    let xhr = new XMLHttpRequest();
+
+    xhr.open('GET', '/train');
+
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+    };
+
+    xhr.send();
 };

@@ -15,10 +15,12 @@ def index():
 @app.route("/predict", methods=["POST"])
 def image_vector():
     vectorized_image = request.get_json()
-    print(vectorized_image['image'])
+    nw = Network()
+    nw.load_weights()
+    predict = nw.make_prediction(vectorized_image['image'])
 
     response = app.response_class(
-        response=json.dumps({"id": 1}),
+        response=json.dumps({"predict": predict.tolist()}),
         status=200,
         mimetype='application/json'
     )
@@ -28,10 +30,10 @@ def image_vector():
 @app.route("/train")
 def train():
     data = upload_training_data("training_data/", "0")
-    print(data)
     nw = Network()
     nw.train_network(data)
     print(nw.make_prediction(data[0]['image']))
+    nw.save_weights()
 
     response = app.response_class(
         response=json.dumps({"status": "trained"}),
